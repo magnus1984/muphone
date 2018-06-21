@@ -44,7 +44,7 @@ aws cloudformation describe-stacks --stack-name <YOUR-STACK-NAME> --query 'Stack
 ```
 
 ## Usage Examples
-usage example use httpie for the client library
+Example use [httpie](https://httpie.org/) for the client library
 
 ### Submit a phone number for validation
 ```bash
@@ -69,4 +69,4 @@ http POST https://your.url.endpoint/phone/validation number=<YOUR-PHONE-NUMBER> 
 There is a live demo available here: https://cmx94tf3ee.execute-api.ca-central-1.amazonaws.com/Prod/
 
 ## Author
-Jonathan Pelletier (jomagnus1984@gmail.com)
+Jonathan Pelletier (jomagnus1984@gmail.com, jonathan.pelletier1@gmail.com)
