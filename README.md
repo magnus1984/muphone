@@ -3,8 +3,8 @@ A phone ownership validation microservice
 
 ## Introduction
 muphone is an AWS lambda microservice that allows you to verify ownership of a 
-user provided phone number. This is needed in many "sign up" scenario on many 
-websites. Here are the typical steps of  verification workflow:
+user provided phone number. This is usually needed in "sign up" scenarios on 
+many websites. Here are the typical steps of a validation workflow:
 
 1. A user submits a phone number through a form on your website.
 2. The user is sent a generated validation code at the phone number provided.
@@ -19,11 +19,10 @@ You can interact with the microservice with your favorite http client library.
 I like to use httpie for that:
 
 ```bash
-http POST https://muphone.portfolio.hedgenet.info/phone number=<your phone 
-number (e.g: +15147174993)>
+http POST https://muphone.portfolio.hedgenet.info/phone number=<your number>
 ```
 
-Once a phone number is submitted, you can query the current verification 
+The format of the phone has to be Once a phone number is submitted, you can query the current verification 
 status:
 
 ```bash
