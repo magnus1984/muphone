@@ -1,44 +1,35 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    sam-app
+    muphone 
 
-    Sample SAM Template for sam-app
+    Cloudformation Template for the muphone microservice
     
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
     Function:
         Timeout: 3
 
-
 Resources:
 
-    HelloWorldFunction:
-        Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    NewPhoneNumber:
+        Type: AWS::Serverless::Function 
         Properties:
             CodeUri: hello_world/build/
-            Handler: app.lambda_handler
+            Handler: app.new_phone_number
             Runtime: python3.6
-            Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+            Environment: 
                 Variables:
-                    PARAM1: VALUE
+                    SMS_PROVIER_KEY: VALUE
             Events:
-                HelloWorld:
-                    Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                NewNumber:
+                    Type: Api 
                     Properties:
-                        Path: /hello
-                        Method: get
+                        Path: /phone
+                        Method: post
 
 Outputs:
 
-    HelloWorldApi:
-      Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    MuPhoneApi:
+      Description: "API Gateway endpoint URL for Prod stage for the muphone microservice"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
 
-    HelloWorldFunction:
-      Description: "Hello World Lambda Function ARN"
-      Value: !GetAtt HelloWorldFunction.Arn
-
-    HelloWorldFunctionIamRole:
-      Description: "Implicit IAM Role created for Hello World function"
-      Value: !GetAtt HelloWorldFunctionRole.Arn
