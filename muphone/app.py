@@ -1,10 +1,23 @@
 import json
 
-import requests
+def response(status, payload):
+    """ Creates a response object as requested by AWS lambda
 
+    Arguments:
+        status integer -- HTTP status code to return
+        payload dict -- return dict to be serialized and included in the body
 
-def lambda_handler(event, context):
-    """Sample pure Lambda function
+    Returns:
+        dict -- {'statusCode': int, 'body':string}
+    """
+
+    return {
+        'statusCode': status,
+        'body': json.dumps(payload)
+        }
+
+def new_phone_number(event, context):
+    """ Creates a new phone number to verify
 
     Arguments:
         event LambdaEvent -- Lambda Event received from Invoke API
@@ -14,7 +27,6 @@ def lambda_handler(event, context):
         dict -- {'statusCode': int, 'body': dict}
     """
 
-    ip = requests.get('http://checkip.amazonaws.com/')
 
     return {
         "statusCode": 200,
