@@ -86,6 +86,8 @@ def main():
 
     print('your dynamodb local instance is ready to use (specify --docker-network {} when invoking sam local)'.format(DYNAMODB_LOCAL_NETWORK))
 
+    os.system('when-changed muphone/ -c "cp muphone/*.py muphone/build" &')
+    os.system('when-changed requirements.txt -c "pip install -r requirements.txt -t muphone/build" &')
 
 if __name__ == '__main__':
     main()
