@@ -1,4 +1,5 @@
 import json
+import phonenumbers
 
 def response(status, payload):
     """ Creates a response object as requested by AWS lambda
@@ -27,8 +28,24 @@ def new_phone_number(event, context):
         dict -- {'statusCode': int, 'body': dict}
     """
 
-    print(event)
-    return response(200, {'message':'all good'}
+    phone_number = None
+    try:
+        phone_number = json.loads(event['body'])['phone']
+    except:
+        error = {'message':'POST request must contain phone'}
+        return response(400, error)
 
 
+    try:
+        number = phonenumbers.parse(phone_number, 'US')
+    except:
+        return response(400, {'message':'the provided string does not appear to be a phone number'})
 
+    if not phonenumbers.is_valid_number(number):
+        return response(400, {'message':'the provided phone number is invalid'})
+
+
+    formated_number = phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
+
+
+    return response(200, {'number':formated_number})
