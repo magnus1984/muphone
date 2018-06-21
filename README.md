@@ -56,7 +56,7 @@ http POST https://your.url.endpoint/phone number=<YOUR-PHONE-NUMBER>
 http GET https://your.url.endpoint/phone number==<YOUR-E164-FORMATTED-NUMBER>
 ```
 
-NOTE: the api automatically persist in a dynamodb table the phone number submitted
+NOTE: the API automatically persist in a dynamodb table the phone number submitted
 in the E164 format. To query the status of a previously submitted number, it is 
 your responsability to convert to the E164 format.
 
