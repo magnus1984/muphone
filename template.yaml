@@ -14,7 +14,7 @@ Resources:
     NewPhoneNumber:
         Type: AWS::Serverless::Function 
         Properties:
-            CodeUri: hello_world/build/
+            CodeUri: muphone/build/
             Handler: app.new_phone_number
             Runtime: python3.6
             Environment: 
