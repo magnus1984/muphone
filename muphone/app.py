@@ -27,11 +27,8 @@ def new_phone_number(event, context):
         dict -- {'statusCode': int, 'body': dict}
     """
 
+    print(event)
+    return response(200, {'message':'all good'}
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            'message': 'hello world',
-            'location': ip.text.replace('\n', ''),
-        })
-    }
+
+
