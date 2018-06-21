@@ -17,15 +17,67 @@ Resources:
             CodeUri: muphone/build/
             Handler: app.new_phone_number
             Runtime: python3.6
+            Policies:
+                - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+                - arn:aws:iam::aws:policy/AWSLambdaExecute
+                - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
             Environment: 
                 Variables:
-                    SMS_PROVIER_KEY: VALUE
+                    DYNAMODB_PHONE_TABLE_NAME: !Ref PhoneTable
             Events:
                 NewNumber:
                     Type: Api 
                     Properties:
                         Path: /phone
                         Method: post
+
+    PhoneNumber:
+        Type: AWS::Serverless::Function 
+        Properties:
+            CodeUri: muphone/build/
+            Policies:
+                - arn:aws:iam::aws:policy/AWSLambdaExecute
+                - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+            Handler: app.phone_number
+            Runtime: python3.6
+            Environment: 
+                Variables:
+                    DYNAMODB_PHONE_TABLE_NAME: !Ref PhoneTable
+            Events:
+                PhoneNumber:
+                    Type: Api 
+                    Properties:
+                        Path: /phone
+                        Method: get
+    ValidateNumber:
+        Type: AWS::Serverless::Function 
+        Properties:
+            CodeUri: muphone/build/
+            Handler: app.validate_number
+            Policies:
+                - arn:aws:iam::aws:policy/AWSLambdaExecute
+                - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+            Runtime: python3.6
+            Environment: 
+                Variables:
+                    DYNAMODB_PHONE_TABLE_NAME: !Ref PhoneTable
+            Events:
+                PhoneNumber:
+                    Type: Api 
+                    Properties:
+                        Path: /phone/validation
+                        Method: post
+
+
+    PhoneTable:
+        Type: AWS::Serverless::SimpleTable
+        Properties:
+            PrimaryKey:
+                Name: number
+                Type: String
+            ProvisionedThroughput:
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
 
 Outputs:
 

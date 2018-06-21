@@ -1,5 +1,7 @@
 import json
 import phonenumbers
+import validation
+import message
 
 import boto3
 import os
@@ -9,7 +11,7 @@ def get_dynamodb_phone_table():
     if os.getenv('AWS_SAM_LOCAL'):
         table = boto3.resource('dynamodb', endpoint_url='http://dynamodb:8000').Table('phone')
     else:
-        table = boto3.resource('dynamodb').Table(os.get('DYNAMODB_PHONE_TABLE_NAME'))
+        table = boto3.resource('dynamodb').Table(os.getenv('DYNAMODB_PHONE_TABLE_NAME'))
 
     return table
 
@@ -47,7 +49,6 @@ def new_phone_number(event, context):
         error = {'message':'POST request must contain a number field'}
         return response(400, error)
 
-
     try:
         number = phonenumbers.parse(phone_number, 'US')
     except:
@@ -57,13 +58,17 @@ def new_phone_number(event, context):
         return response(400, {'message':'the provided phone number is invalid'})
 
     formated_number = phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
-    init_state = 'NEW'
+    init_status= 'NEW'
     validation_code = validation.code()
 
-    item = {'number':formated_number, 'state': init_state, 'validation_code':validation_code}
+    message.sms(formated_number, 'your validation code is: {}'.format(validation_code))
+
+    item = {'number':formated_number, 'validation_status': init_status, 'validation_code':validation_code}
     table = get_dynamodb_phone_table()
 
     table.put_item(Item=item)
+
+    del item['validation_code']
 
     return response(200, item)
 
@@ -82,12 +87,44 @@ def phone_number(event, context):
     except:
         return response(200, None)
 
+    del item['validation_code']
+
     return response(200, item)
 
 def validate_number(event, context):
 
     number = None
-    validation
+    validation_code = None
+    try:
+        json_body = json.loads(event['body'])
+        number = json_body['number']
+        validation_code = json_body['validation_code']
+    except:
+        error = {'message':'request must include both number and validation_code field'}
+        return response(400, error)
+
+    table = get_dynamodb_phone_table()
+    item = None
+    try:
+        item = table.get_item(Key={'number':number})['Item']
+    except:
+        error = {
+            'message':'Could not find number {} in our records. Make sure the number has been submitted and is E164 formatted'
+        }
+        return response(400, error)
 
 
+    Key = {'number':number}
+    validated_state = 'VALID'
+    invalid_state = 'INVALID'
+
+    if item['validation_code'] == validation_code:
+        table.update_item( Key=Key, UpdateExpression='SET validation_status= :val1', ExpressionAttributeValues={':val1': validated_state})
+        item = table.get_item(Key=Key)['Item']
+        return response(200, item)
+
+    else:
+        table.update_item( Key=Key, UpdateExpression='SET validation_status= :val1', ExpressionAttributeValues={':val1': invalid_state})
+        error = {'message':'validation code {} for {} is invalid'.format(validation_code, number)}
+        return response(400, error)
 
