@@ -44,7 +44,7 @@ def new_phone_number(event, context):
     try:
         phone_number = json.loads(event['body'])['number']
     except:
-        error = {'message':'POST request must contain phone'}
+        error = {'message':'POST request must contain a number field'}
         return response(400, error)
 
 
@@ -56,11 +56,11 @@ def new_phone_number(event, context):
     if not phonenumbers.is_valid_number(number):
         return response(400, {'message':'the provided phone number is invalid'})
 
-
     formated_number = phonenumbers.format_number(number, phonenumbers.PhoneNumberFormat.E164)
     init_state = 'NEW'
+    validation_code = validation.code()
 
-    item = {'number':formated_number, 'state': init_state}
+    item = {'number':formated_number, 'state': init_state, 'validation_code':validation_code}
     table = get_dynamodb_phone_table()
 
     table.put_item(Item=item)
@@ -69,8 +69,25 @@ def new_phone_number(event, context):
 
 def phone_number(event, context):
 
-    print(event)
-    return response(200, {'message':'all good'})
+    number = None
+    try:
+        number = event['queryStringParameters']['number']
+    except:
+        error = {'message':'request must include the number query string parameter'}
+        return response(400, error)
+
+    table = get_dynamodb_phone_table()
+    try:
+        item = table.get_item(Key={'number':number})['Item']
+    except:
+        return response(200, None)
+
+    return response(200, item)
+
+def validate_number(event, context):
+
+    number = None
+    validation
 
 
 
