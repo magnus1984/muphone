@@ -26,10 +26,18 @@ def response(status, payload):
         dict -- {'statusCode': int, 'body':string}
     """
 
-    return {
-        'statusCode': status,
-        'body': json.dumps(payload)
+    resp =  {
+        'statusCode':status,
+        'headers': {
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Origin':'*'
+            }
         }
+
+    if payload:
+        resp['body'] = json.dumps(payload)
+
+    return resp
 
 def new_phone_number(event, context):
     """ Creates a new phone number to verify
@@ -127,4 +135,10 @@ def validate_number(event, context):
         table.update_item( Key=Key, UpdateExpression='SET validation_status= :val1', ExpressionAttributeValues={':val1': invalid_state})
         error = {'message':'validation code {} for {} is invalid'.format(validation_code, number)}
         return response(400, error)
+
+def cors(event, context):
+    """ enable CORS for the API """
+
+    return response(200, None)
+
 

@@ -68,6 +68,35 @@ Resources:
                         Path: /phone/validation
                         Method: post
 
+    CorsPhoneValidation:
+        Type: AWS::Serverless::Function 
+        Properties:
+            CodeUri: muphone/build/
+            Handler: app.cors
+            Policies:
+                - arn:aws:iam::aws:policy/AWSLambdaExecute
+            Runtime: python3.6
+            Events:
+                PhoneNumber:
+                    Type: Api 
+                    Properties:
+                        Path: /phone/validation
+                        Method: options
+
+    CorsPhone:
+        Type: AWS::Serverless::Function 
+        Properties:
+            CodeUri: muphone/build/
+            Handler: app.cors
+            Policies:
+                - arn:aws:iam::aws:policy/AWSLambdaExecute
+            Runtime: python3.6
+            Events:
+                PhoneNumber:
+                    Type: Api 
+                    Properties:
+                        Path: /phone
+                        Method: options
 
     PhoneTable:
         Type: AWS::Serverless::SimpleTable
