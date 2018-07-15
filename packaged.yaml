@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: "muphone \nCloudformation Template for the muphone microservice\n"
+Globals:
+  Function:
+    Timeout: 3
+Outputs:
+  MuPhoneApi:
+    Description: API Gateway endpoint URL for Prod stage for the muphone microservice
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+Resources:
+  CorsPhone:
+    Properties:
+      CodeUri: s3://muphone/ed97a11835c29350755f1a517a76891b
+      Events:
+        PhoneNumber:
+          Properties:
+            Method: options
+            Path: /phone
+          Type: Api
+      Handler: app.cors
+      Policies:
+      - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Runtime: python3.6
+    Type: AWS::Serverless::Function
+  CorsPhoneValidation:
+    Properties:
+      CodeUri: s3://muphone/ed97a11835c29350755f1a517a76891b
+      Events:
+        PhoneNumber:
+          Properties:
+            Method: options
+            Path: /phone/validation
+          Type: Api
+      Handler: app.cors
+      Policies:
+      - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Runtime: python3.6
+    Type: AWS::Serverless::Function
+  NewPhoneNumber:
+    Properties:
+      CodeUri: s3://muphone/ed97a11835c29350755f1a517a76891b
+      Environment:
+        Variables:
+          DYNAMODB_PHONE_TABLE_NAME:
+            Ref: PhoneTable
+      Events:
+        NewNumber:
+          Properties:
+            Method: post
+            Path: /phone
+          Type: Api
+      Handler: app.new_phone_number
+      Policies:
+      - arn:aws:iam::aws:policy/AmazonSNSFullAccess
+      - arn:aws:iam::aws:policy/AWSLambdaExecute
+      - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      Runtime: python3.6
+    Type: AWS::Serverless::Function
+  PhoneNumber:
+    Properties:
+      CodeUri: s3://muphone/ed97a11835c29350755f1a517a76891b
+      Environment:
+        Variables:
+          DYNAMODB_PHONE_TABLE_NAME:
+            Ref: PhoneTable
+      Events:
+        PhoneNumber:
+          Properties:
+            Method: get
+            Path: /phone
+          Type: Api
+      Handler: app.phone_number
+      Policies:
+      - arn:aws:iam::aws:policy/AWSLambdaExecute
+      - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      Runtime: python3.6
+    Type: AWS::Serverless::Function
+  PhoneTable:
+    Properties:
+      PrimaryKey:
+        Name: number
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+    Type: AWS::Serverless::SimpleTable
+  ValidateNumber:
+    Properties:
+      CodeUri: s3://muphone/ed97a11835c29350755f1a517a76891b
+      Environment:
+        Variables:
+          DYNAMODB_PHONE_TABLE_NAME:
+            Ref: PhoneTable
+      Events:
+        PhoneNumber:
+          Properties:
+            Method: post
+            Path: /phone/validation
+          Type: Api
+      Handler: app.validate_number
+      Policies:
+      - arn:aws:iam::aws:policy/AWSLambdaExecute
+      - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+      Runtime: python3.6
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

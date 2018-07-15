@@ -30,7 +30,8 @@ def response(status, payload):
         'statusCode':status,
         'headers': {
             'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-            'Access-Control-Allow-Origin':'*'
+            'Access-Control-Allow-Origin':'*',
+            'Access-Control-Allow-Headers':'Content-Type'
             }
         }
 
