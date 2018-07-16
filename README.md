@@ -34,6 +34,7 @@ The microservice uses AWS CloudFormation for automated deployment. Once you have
 completed the setup steps, you can deploy using the aws cli
 
 ```bash
+aws s3api create-bucket --bucket <YOUR-S3-BUCKET> --region ca-central-1 --create-bucket-configuration LocationConstraint=ca-central-1
 aws cloudformation package --template-file template.yaml --s3-bucket <YOUR-S3-BUCKET> --output-template-file packaged.yaml
 aws cloudformation deploy --template-file packaged.yaml --stack-name <YOUR-STACK-NAME> --capabilities CAPABILITY_IAM
 ```
